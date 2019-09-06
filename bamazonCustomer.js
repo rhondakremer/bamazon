@@ -51,8 +51,27 @@ inquirer
     .then(function(response) {
         requestedItem = response.id;
         requestedQuantity = response.quantity
-        console.log(requestedItem, requestedQuantity)
+        makePurchase(requestedItem, requestedQuantity)
     }
     )
+
+    function makePurchase(requestedItem, requestedQuantity) {
+        connection.query("SELECT * FROM products where item_id=" + requestedItem, function(error, res){
+            if(error) {
+                console.log(error)
+            } else {
+               for (let i = 0; i < res.length; i++) {
+                   var amountAvailable = res[i].stock_quantity;
+                   //console.log(amountAvailable)
+                   //console.log(requestedQuantity)
+                   if (amountAvailable >= requestedQuantity){
+                       amountAvailable -= requestedQuantity;
+                       console.log(amountAvailable)
+                   }
+               }
+            }
+        }) 
+   
+    }
 
   
