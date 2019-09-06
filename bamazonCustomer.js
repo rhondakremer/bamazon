@@ -8,7 +8,8 @@ var connection=mysql.createConnection({
     database:"bamazon"
 });
 
-connection.connect(function(error){
+function showProducts() {
+    connection.connect(function(error){
     if(error) {
         console.log(error)
     } else {
@@ -27,14 +28,15 @@ connection.connect(function(error){
                    console.log("-------")
                    
                }
+               purchasePrompt();
             }
         }) 
     }
 });
+}
 
 
-
-
+function purchasePrompt() {
 inquirer
     .prompt([
         {
@@ -66,12 +68,14 @@ inquirer
                    //console.log(requestedQuantity)
                    if (amountAvailable >= requestedQuantity){
                        amountAvailable -= requestedQuantity;
-                       console.log(amountAvailable)
+                       //console.log(amountAvailable)
+                       connection.query("UPDATE products SET stock_quantity = " + amountAvailable + " WHERE item_id = " + requestedItem);
+                       console.log("You have purchased " + requestedQuantity + " " + res[i].product_name + "(s)! Thank you for your purchase.")
                    }
                }
             }
         }) 
    
     }
-
-  
+}
+  showProducts()
