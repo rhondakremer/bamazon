@@ -14,8 +14,6 @@ function showProducts() {
         console.log(error)
     } else {
         console.log("You have successfully connected!");
-        //var artist = process.argv.slice(2).join(" ");
-        //console.log(artist);
         connection.query("SELECT * FROM products", function(error, res){
             if(error) {
                 console.log(error)
