@@ -52,13 +52,51 @@ function updateItems() {
                 connection.query("UPDATE products SET stock_quantity = " + quantity + " WHERE item_id = " + addItem)
                 console.log("You have successfully restock this item!")
             }
-        }) 
-                
-            
-       
+        })        
     }
     
+    function addNewToInventory(newItemName, newItemDepartment, newItemPrice, newItemQuantity) {
+        connection.query("INSERT INTO `products`(product_name,department_name,price,stock_quantity) VALUES ('" + newItemName + "','" + newItemDepartment + "'," + newItemPrice + "," + newItemQuantity + ");", function(error, res){
+            if(error) {
+                console.log(error)
+            } else {
+                console.log("Your item has been successfully added.")
+            }
+        })        
+    }
 
+function addNewItem() {
+    inquirer.prompt([
+        {
+        type: "input",
+        name: "newItemName",
+        message : "Enter the name of the item you would like to add",
+        },
+        {
+        type: "input",
+        name: "newItemDepartment",
+        message : "What department does it belong in?",
+        },
+        {
+        type: "input",
+        name: "newItemPrice",
+        message: "What is the price of this item?"
+        },
+        {
+        type: "input",
+        name: "newItemQuantity",
+        message: "How many would you like to stock?"
+        }
+    ])
+    .then(function(response) {
+        newItemName = response.newItemName;
+        newItemDepartment = response.newItemDepartment;
+        newItemPrice = response.newItemPrice;
+        newItemQuantity = parseInt(response.newItemQuantity)
+        addNewToInventory(newItemName, newItemDepartment, newItemPrice, newItemQuantity)
+    }
+    )
+}
 
 function options() {
     inquirer.prompt([
@@ -95,7 +133,7 @@ function options() {
             updateItems();
             displayItems();
         } else if (response.options == "Add New Product"){
-            // do a bunch of code here
+            addNewItem()
         }
         })
 
