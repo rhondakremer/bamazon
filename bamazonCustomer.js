@@ -68,8 +68,9 @@ function makePurchase(requestedItem, requestedQuantity) {
                    if (amountAvailable >= requestedQuantity){
                        amountAvailable -= requestedQuantity;
                        //console.log(amountAvailable)
+                       var cost = res[i].price * requestedQuantity;
                        connection.query("UPDATE products SET stock_quantity = " + amountAvailable + " WHERE item_id = " + requestedItem);
-                       console.log("You have purchased " + requestedQuantity + " " + res[i].product_name + "(s)! Thank you for your purchase.")
+                       console.log("You have purchased " + requestedQuantity + " " + res[i].product_name + "(s) for " + cost + "! Thank you for your purchase.")
                        purchaseAnother();
                    }
                }
