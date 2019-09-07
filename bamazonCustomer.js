@@ -64,7 +64,7 @@ function makePurchase(requestedItem, requestedQuantity) {
                     purchasePrompt()
                 }
                for (let i = 0; i < res.length; i++) {
-                   console.log(res)
+                   //console.log(res)
                    var amountAvailable = parseInt(res[i].stock_quantity);
                    //console.log(amountAvailable)
                    //console.log(requestedQuantity)
