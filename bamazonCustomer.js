@@ -13,7 +13,7 @@ function showProducts() {
     if(error) {
         console.log(error)
     } else {
-        console.log("You have successfully connected!");
+        //console.log("You have successfully connected!");
         connection.query("SELECT * FROM products", function(error, res){
             if(error) {
                 console.log(error)
@@ -59,7 +59,12 @@ function makePurchase(requestedItem, requestedQuantity) {
             if(error) {
                 console.log(error)
             } else {
+                if (res.length == 0) {
+                    console.log("Please pick a valid item number!")
+                    purchasePrompt()
+                }
                for (let i = 0; i < res.length; i++) {
+                   console.log(res)
                    var amountAvailable = parseInt(res[i].stock_quantity);
                    //console.log(amountAvailable)
                    //console.log(requestedQuantity)
@@ -71,7 +76,7 @@ function makePurchase(requestedItem, requestedQuantity) {
                        //console.log(amountAvailable)
                        var cost = res[i].price * requestedQuantity;
                        connection.query("UPDATE products SET stock_quantity = " + amountAvailable + " WHERE item_id = " + requestedItem);
-                       console.log("You have purchased " + requestedQuantity + " " + res[i].product_name + "(s) for " + cost + "! Thank you for your purchase.")
+                       console.log("You have purchased " + requestedQuantity + " " + res[i].product_name + "(s) for $" + cost + "! Thank you for your purchase.")
                        purchaseAnother();
                    }
                }
@@ -91,7 +96,7 @@ function purchaseAnother() {
         }
     ])
     .then(function(response) {
-        console.log(response.another)
+        //console.log(response.another)
         if (response.another == "yes") {
             connection.query("SELECT * FROM products", function(error, res){
                 if(error) {
