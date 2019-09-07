@@ -51,7 +51,7 @@ function purchasePrompt() {
     ])
     .then(function(response) {
         requestedItem = response.id;
-        requestedQuantity = response.quantity
+        requestedQuantity = parseInt(response.quantity)
         makePurchase(requestedItem, requestedQuantity)
     }
     )
@@ -62,10 +62,13 @@ function makePurchase(requestedItem, requestedQuantity) {
                 console.log(error)
             } else {
                for (let i = 0; i < res.length; i++) {
-                   var amountAvailable = res[i].stock_quantity;
+                   var amountAvailable = parseInt(res[i].stock_quantity);
                    //console.log(amountAvailable)
                    //console.log(requestedQuantity)
-                   if (amountAvailable >= requestedQuantity){
+                   if (amountAvailable < requestedQuantity){
+                    console.log("Sorry! Insufficient quantity!")
+                    purchasePrompt()
+                   } else {
                        amountAvailable -= requestedQuantity;
                        //console.log(amountAvailable)
                        var cost = res[i].price * requestedQuantity;
