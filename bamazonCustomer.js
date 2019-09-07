@@ -37,8 +37,7 @@ function showProducts() {
 
 
 function purchasePrompt() {
-inquirer
-    .prompt([
+    inquirer.prompt([
         {
         type: "input",
         name: "id",
@@ -57,8 +56,8 @@ inquirer
     }
     )
 
-    function makePurchase(requestedItem, requestedQuantity) {
-        connection.query("SELECT * FROM products where item_id=" + requestedItem, function(error, res){
+function makePurchase(requestedItem, requestedQuantity) {
+    connection.query("SELECT * FROM products where item_id=" + requestedItem, function(error, res){
             if(error) {
                 console.log(error)
             } else {
@@ -71,6 +70,7 @@ inquirer
                        //console.log(amountAvailable)
                        connection.query("UPDATE products SET stock_quantity = " + amountAvailable + " WHERE item_id = " + requestedItem);
                        console.log("You have purchased " + requestedQuantity + " " + res[i].product_name + "(s)! Thank you for your purchase.")
+                       purchaseAnother();
                    }
                }
             }
@@ -78,4 +78,40 @@ inquirer
    
     }
 }
-  showProducts()
+
+function purchaseAnother() {
+    inquirer.prompt([
+        {
+        type: "list",
+        name: "another",
+        message : "Would you like to purchase another item?",
+        choices : ["yes", "no"]
+        }
+    ])
+    .then(function(response) {
+        console.log(response.another)
+        if (response.another == "yes") {
+            connection.query("SELECT * FROM products", function(error, res){
+                if(error) {
+                    console.log(error)
+                } else {
+    
+                   for (let i = 0; i < res.length; i++) {
+    
+                       console.log("Item ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Price: $" + res[i].price);
+                       console.log("-------")
+                       
+                   }
+                   purchasePrompt();
+                }
+            }) 
+            
+        } else {
+            console.log("Have a great day and come back soon!")
+            connection.end();
+        }
+    })
+}
+
+
+showProducts()
