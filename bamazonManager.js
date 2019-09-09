@@ -8,6 +8,33 @@ var connection=mysql.createConnection({
     database:"bamazon"
 });
 
+connection.connect(function(error){
+    if(error) {
+        console.log(error)
+    } else {
+        //console.log("You have successfully connected!");
+        
+    }
+});
+
+function anotherTask() {
+    inquirer.prompt([
+        {
+        type: "list",
+        name: "anotherTask",
+        message : "Would you like to complete another task?",
+        choices: ["yes","no"]
+        }
+    ])
+    .then(function(response) {
+        if (response.anotherTask == "no") {
+            connection.end()
+        } else if (response.anotherTask == "yes") {
+            options();
+        }
+})
+}
+
 function displayItems() {
     connection.query("SELECT * FROM products", function(error, res){
         if(error) {
@@ -16,7 +43,7 @@ function displayItems() {
            for (let i = 0; i < res.length; i++) {
                console.log("Item ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Price: $" + res[i].price);
                console.log("-------")
-           }
+           } 
         }
     }) 
 }
@@ -50,7 +77,8 @@ function updateItems() {
                 console.log(addQuantity)
                 var quantity = parseInt(res[0].stock_quantity) + parseInt(addQuantity);
                 connection.query("UPDATE products SET stock_quantity = " + quantity + " WHERE item_id = " + addItem)
-                console.log("You have successfully restock this item!")
+                console.log("You have successfully restocked this item!");
+                anotherTask();
             }
         })        
     }
@@ -110,24 +138,19 @@ function options() {
     .then(function(response) {
         console.log(response.options)
         if (response.options == "View Products for Sale") {
-            connection.connect(function(error){
-                if(error) {
-                    console.log(error)
-                } else {
-                    console.log("You have successfully connected!");
-                    displayItems()
-                }
-            });
+            displayItems();
+            anotherTask();
         } else if (response.options == "View Low Inventory"){
             connection.query("SELECT * FROM products WHERE stock_quantity<=15", function(error, res){
                 if(error) {
                     console.log(error)
                 } else {
+                    console.log("These items are running low: ")
                    for (let i = 0; i < res.length; i++) {
-                       console.log("These items are running low: \nItem ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Quantity: " + res[i].stock_quantity);
+                       console.log("\nItem ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Quantity: " + res[i].stock_quantity);
                        console.log("-------")
-                   }
-                }
+                   } 
+                } 
             }) 
         } else if (response.options == "Add to Inventory"){
             updateItems();
