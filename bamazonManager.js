@@ -41,12 +41,26 @@ function displayItems() {
             console.log(error)
         } else {
            for (let i = 0; i < res.length; i++) {
-               console.log("Item ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Price: $" + res[i].price);
+               console.log("Item ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Price: $" + res[i].price + "|| Stock Quantity: " + res[i].stock_quantity);
+               console.log("-------")
+           } anotherTask()
+        }
+    }) 
+}
+
+function displayItemsForAdd() {
+    connection.query("SELECT * FROM products", function(error, res){
+        if(error) {
+            console.log(error)
+        } else {
+           for (let i = 0; i < res.length; i++) {
+               console.log("Item ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Price: $" + res[i].price + "|| Stock Quantity: " + res[i].stock_quantity);
                console.log("-------")
            } 
         }
     }) 
 }
+
 
 function updateItems() {
     inquirer.prompt([
@@ -74,12 +88,15 @@ function updateItems() {
             if(error) {
                 console.log(error)
             } else {
-                console.log(addQuantity)
+                if (res.length > 0) {
+                //console.log(addQuantity)
                 var quantity = parseInt(res[0].stock_quantity) + parseInt(addQuantity);
                 connection.query("UPDATE products SET stock_quantity = " + quantity + " WHERE item_id = " + addItem)
                 console.log("You have successfully restocked this item!");
                 anotherTask();
-            }
+            } else {console.log("Please pick a valid item number!")
+            updateItems();
+            }}
         })        
     }
     
@@ -89,6 +106,7 @@ function updateItems() {
                 console.log(error)
             } else {
                 console.log("Your item has been successfully added.")
+                anotherTask()
             }
         })        
     }
@@ -119,11 +137,27 @@ function addNewItem() {
     .then(function(response) {
         newItemName = response.newItemName;
         newItemDepartment = response.newItemDepartment;
-        newItemPrice = response.newItemPrice;
+        newItemPrice = parseFloat(response.newItemPrice);
         newItemQuantity = parseInt(response.newItemQuantity)
-        addNewToInventory(newItemName, newItemDepartment, newItemPrice, newItemQuantity)
+        //console.log(newItemName,newItemDepartment,newItemPrice,newItemQuantity);
+        if (!newItemName){
+            console.log("Please enter a valid item!")
+            addNewItem()}
+        else if (!newItemDepartment) {
+            console.log("Please enter a valid department!")
+            addNewItem()
+        }
+        else if (!newItemPrice) {
+            console.log("Please enter a valid price!")
+            addNewItem()
+        
+        } else if (!newItemQuantity) {
+        console.log("Please enter a valid quantity!")
+            addNewItem()
+        } else {
+            addNewToInventory(newItemName, newItemDepartment, newItemPrice, newItemQuantity);
     }
-    )
+})
 }
 
 function options() {
@@ -139,9 +173,8 @@ function options() {
         console.log(response.options)
         if (response.options == "View Products for Sale") {
             displayItems();
-            anotherTask();
         } else if (response.options == "View Low Inventory"){
-            connection.query("SELECT * FROM products WHERE stock_quantity<=15", function(error, res){
+            connection.query("SELECT * FROM products WHERE stock_quantity<5", function(error, res){
                 if(error) {
                     console.log(error)
                 } else {
@@ -149,12 +182,12 @@ function options() {
                    for (let i = 0; i < res.length; i++) {
                        console.log("\nItem ID: " + res[i].item_id + "|| Product: " + res[i].product_name + "|| Quantity: " + res[i].stock_quantity);
                        console.log("-------")
-                   } 
+                   } anotherTask()
                 } 
             }) 
         } else if (response.options == "Add to Inventory"){
             updateItems();
-            displayItems();
+            displayItemsForAdd();
         } else if (response.options == "Add New Product"){
             addNewItem()
         }
